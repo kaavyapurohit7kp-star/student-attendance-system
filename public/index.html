@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AttendEase — Student Attendance</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="loginView" class="login-shell">
+    <form id="loginForm" class="login-card">
+      <div class="brand-mark">A</div>
+      <p class="eyebrow">ATTENDEASE · ADMIN PORTAL</p>
+      <h1>Welcome back</h1>
+      <p class="muted">Sign in to manage student attendance.</p>
+      <label>Username<input id="username" autocomplete="username" required value="admin"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Your admin password"></label>
+      <p id="loginError" class="error"></p>
+      <button class="primary full" type="submit">Sign in <span>→</span></button>
+      <p class="login-foot">Student Attendance Management System</p>
+    </form>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark small">A</div><div><b>AttendEase</b><small>ADMIN CONSOLE</small></div></div>
+      <div class="nav-label">WORKSPACE</div>
+      <button class="nav-item active" data-page="dashboard"><span>▦</span> Dashboard</button>
+      <button class="nav-item" data-page="students"><span>♙</span> Students</button>
+      <button class="nav-item" data-page="attendance"><span>✓</span> Attendance</button>
+      <button class="nav-item" data-page="reports"><span>▤</span> Reports</button>
+      <div class="sidebar-bottom"><div class="avatar">AD</div><div class="admin-info"><b>Administrator</b><small id="storageMode">Connected</small></div><button id="logoutBtn" class="logout" title="Sign out">↪</button></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div><p class="eyebrow" id="pageEyebrow">OVERVIEW</p><h1 id="pageTitle">Dashboard</h1></div><div class="top-right"><span class="today-chip" id="todayLabel"></span><div class="avatar">AD</div></div></header>
+
+      <section id="dashboardPage" class="page">
+        <div class="welcome"><div><p class="eyebrow light">YOUR CLASSROOM AT A GLANCE</p><h2>Good day, Administrator 👋</h2><p>Here is your attendance overview for today.</p></div><div class="welcome-icon">✦</div></div>
+        <div class="stat-grid">
+          <article class="stat-card"><div class="stat-icon blue">♙</div><p>Total students</p><strong id="totalStudents">0</strong><small>Registered students</small></article>
+          <article class="stat-card"><div class="stat-icon green">✓</div><p>Present today</p><strong id="presentCount">0</strong><small>Marked present</small></article>
+          <article class="stat-card"><div class="stat-icon red">–</div><p>Absent today</p><strong id="absentCount">0</strong><small>Marked absent</small></article>
+          <article class="stat-card"><div class="stat-icon amber">◷</div><p>Not marked</p><strong id="notMarkedCount">0</strong><small>Awaiting attendance</small></article>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h3>Quick attendance</h3><p class="muted">Start marking attendance for today.</p></div><button class="primary" data-go="attendance">Take attendance →</button></div>
+          <div class="quick-row"><div class="quick-symbol">✓</div><div><b>Daily attendance register</b><p class="muted">Mark each student as present, absent or on leave.</p></div><span class="status-pill info" id="todayProgress">0 marked</span></div>
+        </div>
+      </section>
+
+      <section id="studentsPage" class="page hidden">
+        <div class="toolbar"><div><h2>Student directory</h2><p class="muted">Manage your registered students.</p></div><button id="addStudentBtn" class="primary">＋ Add student</button></div>
+        <div class="panel"><div class="table-tools"><input id="studentSearch" placeholder="Search by name or roll number…"><span id="studentTotal" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>ROLL NUMBER</th><th>COURSE</th><th>SEMESTER</th><th>ACTIONS</th></tr></thead><tbody id="studentsTable"></tbody></table></div></div>
+      </section>
+
+      <section id="attendancePage" class="page hidden">
+        <div class="toolbar"><div><h2>Daily register</h2><p class="muted">Choose a date and update each student's status.</p></div><label class="date-field">Attendance date<input type="date" id="attendanceDate"></label></div>
+        <div class="panel"><div class="register-summary"><span class="status-pill present" id="presentPill">0 Present</span><span class="status-pill absent" id="absentPill">0 Absent</span><span class="status-pill leave" id="leavePill">0 Leave</span><span class="status-pill neutral" id="pendingPill">0 Pending</span><button id="saveAllBtn" class="primary save-all">Save attendance</button></div><div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>ROLL NUMBER</th><th>STATUS</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div>
+      </section>
+
+      <section id="reportsPage" class="page hidden">
+        <div class="toolbar"><div><h2>Attendance reports</h2><p class="muted">Student-wise attendance summary.</p></div><button id="exportBtn" class="secondary">↓ Export CSV</button></div>
+        <div class="panel"><div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>ROLL NUMBER</th><th>PRESENT</th><th>ABSENT</th><th>LEAVE</th><th>ATTENDANCE</th></tr></thead><tbody id="reportsTable"></tbody></table></div></div>
+        <p class="report-note">Attendance percentage = Present ÷ (Present + Absent + Leave) × 100. Unmarked days are not included.</p>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="studentDialog">
+    <form id="studentForm" class="dialog-form">
+      <div class="dialog-head"><div><p class="eyebrow">STUDENT DETAILS</p><h2 id="dialogTitle">Add student</h2></div><button type="button" class="icon-btn" id="closeDialog">×</button></div>
+      <input type="hidden" id="editId">
+      <label>Full name<input id="studentName" required maxlength="80" placeholder="e.g. Aarav Sharma"></label>
+      <label>Roll number<input id="rollNo" required maxlength="30" placeholder="e.g. AI001"></label>
+      <div class="form-row"><label>Course<input id="course" required maxlength="60" value="CSE AI"></label><label>Semester<input id="semester" type="number" min="1" max="12" required value="3"></label></div>
+      <label>Email (optional)<input id="email" type="email" maxlength="100" placeholder="student@example.com"></label>
+      <p id="studentFormError" class="error"></p>
+      <div class="dialog-actions"><button type="button" id="cancelDialog" class="secondary">Cancel</button><button class="primary" type="submit">Save student</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
